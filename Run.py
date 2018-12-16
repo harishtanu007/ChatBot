@@ -1,16 +1,28 @@
-import os
-
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 
-bot=ChatBot('Bot')
-bot.set_trainer(ListTrainer)
 
-while True:
-    message=input('You : ')
-    if message.strip()!='Bye':
-        reply=bot.get_response(message)
-        print('ChatBot :',reply)
-    if message.strip()=='Bye':
-        print('ChatBot : Bye')
-        break
+def get_response(usrText):
+    bot=ChatBot('Bot',
+    storage_adapter='chatterbot.storage.SQLStorageAdapter',
+    local_adapters=[
+        {
+            'import_path':'chatterbot.logic.BestMatch'
+        },
+        {
+            'import_path': 'chatterbot.logic.LowConfidenceAdapter',
+            'threshold':0.70,
+            'default_response':'I am sorry, but I do not understand.'
+        }
+    ],
+    trainer='chatterbot.trainers.ListTrainer')
+    bot.set_trainer(ListTrainer)
+    while True:
+        if usrText.strip()!='Bye':
+            result=bot.get_response(usrText)
+            reply=str(result)
+            return(reply)
+        if usrText.strip()=='Bye':
+            return ('Bye')
+            break
+
